@@ -1,6 +1,7 @@
 var fields = document.querySelectorAll('#form-user-create [name]');
 user = {};
 
+// adicionando user a tela
 function addLine(dataUser) {
 
     document.getElementById('table-users').innerHTML = `
