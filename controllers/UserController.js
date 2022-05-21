@@ -51,18 +51,18 @@ class UserController {
                 reject(e);
             }
     
-            fileReader.readAsDataURL(file);
+            (file) ? fileReader.readAsDataURL(file) : resolve('dist/img/boxed-bg.jpg');
         }); 
     }
 
     addLine(dataUser) {
 
-        this.tableEl.innerHTML = `
+        this.tableEl.innerHTML += `
         <tr>
             <td><img src="${dataUser.photo}" alt="User Image" class="img-circle img-sm"></td>
             <td>${dataUser.name}</td>
             <td>${dataUser.email}</td>
-            <td>${dataUser.admin}</td>
+            <td>${(dataUser.admin) ? "Sim" : "Não"}</td>
             <td>${dataUser.birth}</td>
             <td>
                 <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
@@ -82,6 +82,10 @@ class UserController {
                 
                 if (field.checked) user[field.name] = field.value;
         
+            } else if (field.name === 'admin') {
+
+                user[field.name] = field.checked;
+
             } else {
                 user[field.name] = field.value;
             }
