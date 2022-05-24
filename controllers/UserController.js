@@ -20,9 +20,11 @@ class UserController {
             this.getPhoto().then(
                 (content) => {
                     
-                    values.photo = content;
-                    this.addLine(values);
-
+                    if (values) {
+                        values.photo = content;
+                        this.addLine(values);
+                    }
+                    
                     this.formEl.reset();
 
                     btn.disabled = false;
