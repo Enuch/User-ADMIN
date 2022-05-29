@@ -7,6 +7,7 @@ class UserController {
 
         this.onSubmit();
         this.onEdit();
+        this.selectAll();
     }
 
     onEdit() {
@@ -50,7 +51,7 @@ class UserController {
                     <td>${Utils.dateFormat(result._register)}</td>
                     <td>
                         <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
-                        <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
+                        <button type="button" class="btn btn-danger btn-delete btn-xs btn-flat">Excluir</button>
                     </td>
                     `;
 
@@ -88,6 +89,7 @@ class UserController {
                     if (values) {
                         values.photo = content;
                         this.addLine(values);
+                        this.insert(values);
                     }
                     
                     this.formEl.reset();
@@ -129,11 +131,43 @@ class UserController {
         }); 
     }
 
+    getUsersStorage() {
+        let users = [];
+
+        if (sessionStorage.getItem('users')) {
+            users = JSON.parse(sessionStorage.getItem('users'));
+        }
+
+        return users;
+    }
+
+    selectAll() {
+        let users = this.getUsersStorage();
+
+        users.forEach(dataUsers => {
+            let user = new User();
+
+            user.loadFromJSON(dataUsers);
+
+            this.addLine(user);
+        });
+
+    }
+
+    insert(data) {
+        let users = this.getUsersStorage();
+
+        users.push(data);
+
+        sessionStorage.setItem('users', JSON.stringify(users));
+    }
+
     addLine(dataUser) {
 
         let tr = document.createElement('tr');
 
         tr.dataset.user = JSON.stringify(dataUser);
+
 
         tr.innerHTML = `
             <td><img src="${dataUser.photo}" alt="User Image" class="img-circle img-sm"></td>
@@ -143,7 +177,7 @@ class UserController {
             <td>${Utils.dateFormat(dataUser.register)}</td>
             <td>
                 <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
-                <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
+                <button type="button" class="btn btn-danger btn-delete btn-xs btn-flat">Excluir</button>
             </td>
         `;
 
@@ -155,6 +189,13 @@ class UserController {
     }
 
     addEventsTR(tr) {
+        tr.querySelector('.btn-delete').addEventListener('click', e => {
+            if(confirm("Deseja realmente excluir?")) {
+                tr.remove();
+                this.updateCount();
+            }
+        });
+
         tr.querySelector('.btn-edit').addEventListener('click', e => {
             let json = JSON.parse(tr.dataset.user);
 
